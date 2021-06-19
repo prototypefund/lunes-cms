@@ -7,6 +7,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from django.shortcuts import redirect
 from django.db.models import Count, Q
+from django.views.generic.edit import CreateView
 
 from .models import TrainingSet, Document, AlternativeWord, Discipline
 from .serializers import (
@@ -17,17 +18,21 @@ from .serializers import (
     DocumentImageSerializer,
 )
 
+class DisciplineCreate(CreateView):
+    model = Discipline
+    fields = ['released', 'title', 'description', 'icon']
+    
 
 class DisciplineViewSet(viewsets.ModelViewSet):
     """
-    Defines a view set for the Discipline module, optionally filtered by user groups.
+    Defines a view set for the Discipline module.
     Inherits from `viewsets.ModelViewSet` and defines queryset
     and serializers.
     """
 
     queryset = Discipline.objects.all()
     serializer_class = DisciplineSerializer
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     def get_queryset(self):
         """
@@ -41,31 +46,15 @@ class DisciplineViewSet(viewsets.ModelViewSet):
         """
         if getattr(self, "swagger_fake_view", False):
             return Discipline.objects.none()
-        if 'group_id' in self.kwargs:
-            groups = self.kwargs["group_id"].split("&")
-            queryset = (
-                Discipline.objects.filter(
-                    Q(released=True) & (Q(creator_is_admin=True) | Q(created_by__in=groups))
-                )
-                .order_by("order")
-                .annotate(
-                    total_training_sets=Count(
-                        "training_sets", filter=Q(training_sets__released=True)
-                    )
+        queryset = (
+            Discipline.objects.filter(released=True, created_by__is_active=True)
+            .order_by("order")
+            .annotate(
+                total_training_sets=Count(
+                    "training_sets", filter=Q(training_sets__released=True, training_sets__created_by__is_active=True)
                 )
             )
-        else:
-            queryset = (
-                Discipline.objects.filter(
-                    Q(released=True) & Q(creator_is_admin=True)
-                )
-                .order_by("order")
-                .annotate(
-                    total_training_sets=Count(
-                        "training_sets", filter=Q(training_sets__released=True)
-                    )
-                )
-            )
+        )
         return queryset
 
 
@@ -77,7 +66,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = DocumentSerializer
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     def get_queryset(self):
         """
@@ -106,7 +95,7 @@ class TrainingSetViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = TrainingSetSerializer
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     def get_queryset(self):
         """
@@ -123,7 +112,7 @@ class TrainingSetViewSet(viewsets.ModelViewSet):
         user = self.request.user
         queryset = (
             TrainingSet.objects.filter(
-                discipline__id=self.kwargs["discipline_id"], released=True
+                discipline__id=self.kwargs["discipline_id"], released=True, created_by__is_active=True,
             )
             .order_by("order")
             .annotate(total_documents=Count("documents"))

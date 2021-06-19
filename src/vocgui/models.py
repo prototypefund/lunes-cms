@@ -71,6 +71,7 @@ def convert_umlaute_audio(instance, filename):
         filename = filename.replace(i, j)
     return os.path.join("audio/", filename)
 
+Group.add_to_class('is_active', models.BooleanField(default=True, verbose_name=_('active')))
 
 class Discipline(OrderedModel):
     """

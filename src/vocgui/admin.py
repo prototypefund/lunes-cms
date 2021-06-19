@@ -222,8 +222,8 @@ class DocumentAdmin(admin.ModelAdmin):
     ordering = ["word", "creation_date"]
     list_display = (
         "word",
-        "word_type",
         "article",
+        "word_type",
         "related_training_set",
         "has_audio",
         "has_image",
