@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from django.shortcuts import redirect
 from django.db.models import Count, Q
 
-from .models import TrainingSet, Document, AlternativeWord, Discipline
+from .models import TrainingSet, Document, AlternativeWord, Discipline, DocumentImage
 from .serializers import (
     DisciplineSerializer,
     DocumentSerializer,
@@ -16,6 +16,25 @@ from .serializers import (
     AlternativeWordSerializer,
     DocumentImageSerializer,
 )
+
+class IncompleteDocumentViewSet(viewsets.ModelViewSet):
+    serializer_class = DocumentSerializer
+    http_method_names = ["get"]
+
+    def get_queryset(self):
+        """
+        Defining custom queryset
+
+        :param self: A handle to the :class:`DocumentViewSet`
+        :type self: class
+
+        :return: (filtered) queryset
+        :rtype: QuerySet
+        """
+        if getattr(self, "swagger_fake_view", False):
+            return Document.objects.none()
+        queryset = Document.objects.all().filter(document_image__isnull=True)
+        return queryset
 
 
 class DisciplineViewSet(viewsets.ModelViewSet):

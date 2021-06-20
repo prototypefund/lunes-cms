@@ -38,7 +38,9 @@ router.register(
 router.register(
     r"documents/(?P<training_set_id>[0-9]+)", views.DocumentViewSet, "documents"
 )
-
+router.register(
+    r"incomplete_documents", views.IncompleteDocumentViewSet, "incomplete_documents"
+)
 
 urlpatterns = [
     path("", views.redirect_view, name="redirect"),
