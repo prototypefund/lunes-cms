@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from django.shortcuts import redirect
 from django.db.models import Count, Q
 
-from .models import TrainingSet, Document, AlternativeWord, Discipline, DocumentImage
+from .models import TrainingSet, Document, AlternativeWord, Discipline
 from .serializers import (
     DisciplineSerializer,
     DocumentSerializer,
