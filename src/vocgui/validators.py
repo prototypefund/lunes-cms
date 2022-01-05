@@ -1,6 +1,6 @@
+import os
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-import os
 
 
 def validate_file_extension(value):
@@ -9,9 +9,7 @@ def validate_file_extension(value):
 
     :param value: audio file returned by a `models.FileField`
     :type value: audio file
-
-    :return: None
-    :rtype: None
+    :raises ValidationError: Exception if unsupported file extension is used
     """
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
     valid_extensions = [".mp3", ".aac", ".wav", ".m4a", ".wma", ".ogg"]
@@ -27,9 +25,7 @@ def validate_file_size(value):
 
     :param value: audio file returned by a `models.FileField`
     :type value: audio file
-
-    :return: None
-    :rtype: None
+    :raises ValidationError: Exception if file is larger than 5 MB
     """
     if value.size > (5 * 1024 * 1024):
         raise ValidationError(_("File too large! Max. 5 MB"))
@@ -41,9 +37,7 @@ def validate_multiple_extensions(value):
 
     :param value: audio file returned by a `models.FileField`
     :type value: audio file
-
-    :return: None
-    :rtype: None
+    :raises ValidationError: Exception if file has multiple extensions
     """
     split_name = value.name.split(".")
     if len(split_name) != 2:

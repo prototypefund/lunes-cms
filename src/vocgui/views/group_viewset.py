@@ -8,7 +8,7 @@ from vocgui.models import GroupAPIKey
 from vocgui.utils import get_key
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the Group module.
     Inherits from `viewsets.ModelViewSet` and defines queryset
@@ -23,9 +23,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         """
         Defining custom queryset
 
-        :param self: A handle to the :class:`GroupViewSet`
-        :type self: class
-
+        :raises PermissionDenied: Exception if invalid API-Key is delivered
         :return: (filtered) queryset
         :rtype: QuerySet
         """
@@ -36,8 +34,8 @@ class GroupViewSet(viewsets.ModelViewSet):
             raise PermissionDenied()
         try:
             api_key_object = GroupAPIKey.objects.get_from_key(key)
-        except GroupAPIKey.DoesNotExist:
-            raise PermissionDenied()
+        except GroupAPIKey.DoesNotExist as e:
+            raise PermissionDenied() from e
         if not api_key_object:
             raise PermissionDenied()
         queryset = Group.objects.filter(id=api_key_object.organization_id)

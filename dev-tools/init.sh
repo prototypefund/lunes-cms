@@ -4,5 +4,5 @@ if [ -e "$file" ]; then
   rm $file
 fi
 
-src/vocabulary-trainer migrate
-src/vocabulary-trainer shell < dev-tools/create_user.py
+vocabulary-trainer migrate
+vocabulary-trainer shell < dev-tools/create_user.py

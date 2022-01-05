@@ -1,11 +1,11 @@
 from django.db import models
-from PIL import Image, ImageFilter
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from PIL import Image, ImageFilter
 
+from vocgui.validators import validate_multiple_extensions
 from .static import Static, convert_umlaute_images
 from .document import Document
-from vocgui.validators import validate_multiple_extensions
 
 
 class DocumentImage(models.Model):
@@ -33,7 +33,7 @@ class DocumentImage(models.Model):
         if self.image and self.image.storage.exists(self.image.name):
             if ".png" in self.image.name or ".jpg" in self.image.name:
                 return mark_safe(
-                    '<img src="/media/%s" width="330" height="240"/>' % (self.image)
+                    f'<img src="/media/{self.image}" width="330" height="240"/>'
                 )
         return ""
 
@@ -45,9 +45,6 @@ class DocumentImage(models.Model):
 
         :param self: A handle to the :class:`model.DocumentImage`
         :type self: class: `model.DocumentImage`
-
-        :return: None
-        :rtype: None
         """
         name_elements = self.image.path.split(".")
         for elem in name_elements:
@@ -64,9 +61,6 @@ class DocumentImage(models.Model):
 
         :param self: A handle to the :class:`DocumentImage`
         :type self: class: `DocumentImage`
-
-        :return: None
-        :rtype: None
         """
         img_blurr = Image.open(self.image.path)
         img_cropped = Image.open(self.image.path)
@@ -113,14 +107,13 @@ class DocumentImage(models.Model):
         """
         if self.name:
             return self.name
-        else:
-            return self.document.word
+        return self.document.word
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=missing-param-doc
         """Overwrite djangos save function to scale images into a
         uniform size that is defined in the Static module.
         """
-        super(DocumentImage, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.save_original_img()
         self.crop_img()
 

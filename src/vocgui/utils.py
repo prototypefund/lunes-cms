@@ -33,8 +33,7 @@ def document_to_string(doc):
     if len(alt_words) > 0:
         alt_words = "(" + ", ".join(alt_words) + ")"
         return "(" + doc.get_article_display() + ") " + doc.word + " " + alt_words
-    else:
-        return "(" + doc.get_article_display() + ") " + doc.word
+    return "(" + doc.get_article_display() + ") " + doc.word
 
 
 def get_child_count(disc):
@@ -86,7 +85,7 @@ def get_key(request, keyword="Api-Key"):
     if not authorization:
         return None
     try:
-        _, key = authorization.split("{} ".format(keyword))
+        _, key = authorization.split(f"{keyword} ")
     except ValueError:
         key = None
     return key

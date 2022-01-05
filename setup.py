@@ -13,14 +13,14 @@ setup(
     scripts=["src/vocabulary-trainer"],
     data_files=[
         (
-            "lib/vocabulary-trainer-{}".format(root),
+            f"lib/vocabulary-trainer-{root}",
             [os.path.join(root, f) for f in files],
         )
         for root, dirs, files in os.walk("src/vocgui/templates/")
     ]
     + [
         (
-            "lib/vocabulary-trainer-{}".format(root),
+            f"lib/vocabulary-trainer-{root}",
             [os.path.join(root, f) for f in files],
         )
         for root, dirs, files in os.walk("src/vocgui/static/")

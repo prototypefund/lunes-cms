@@ -1,10 +1,14 @@
 from django.db import models
-from rest_framework_api_key.models import AbstractAPIKey
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
+from rest_framework_api_key.models import AbstractAPIKey
 
 
 class GroupAPIKey(AbstractAPIKey):
+    """
+    API Key model for groups.
+    """
+
     organization = models.ForeignKey(
         Group,
         on_delete=models.CASCADE,

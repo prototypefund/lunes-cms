@@ -1,5 +1,4 @@
 import json
-import collections
 from django.shortcuts import render
 from django.shortcuts import redirect
 from vocgui.models import TrainingSet, Document, DocumentImage, Discipline
@@ -10,7 +9,7 @@ def redirect_view(request):
     Redirect root URL
 
     :param request: Current HTTP request
-    :param type: HttpRequest
+    :type request: HttpRequest
 
     :return: Redirection to api/
     :rtype: HttpResponse

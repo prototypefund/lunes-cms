@@ -5,7 +5,7 @@ from vocgui.models import Document
 from vocgui.serializers import DocumentSerializer
 
 
-class DocumentByIdViewSet(viewsets.ModelViewSet):
+class DocumentByIdViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the Document module of a given id.
     Inherits from `viewsets.ModelViewSet` and defines queryset
@@ -29,6 +29,5 @@ class DocumentByIdViewSet(viewsets.ModelViewSet):
         """
         if getattr(self, "swagger_fake_view", False):
             return Document.objects.none()
-        user = self.request.user
         queryset = Document.objects.filter(id=self.kwargs["document_id"])
         return queryset

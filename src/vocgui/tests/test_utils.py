@@ -15,7 +15,14 @@ from vocgui.utils import (
 
 
 class TestUtils(TestCase):
+    """
+    Simple TestCase for helper functions.
+    """
+
     def setUp(self):
+        """
+        Setup test database and create temporary elements
+        """
         Document.objects.create(
             word_type="Nomen",
             word="Hammer",
@@ -36,6 +43,10 @@ class TestUtils(TestCase):
         )
 
     def test_document_to_string(self):
+        """
+        Checks that vocgui.utils.document_to_string
+        returns a proper string representation of an object.
+        """
         tiger = Document.objects.get(word="Hammer")
         schlange = Document.objects.get(word="Säge")
         tiger_to_string = document_to_string(tiger)
@@ -44,6 +55,11 @@ class TestUtils(TestCase):
         self.assertEqual(schlange_to_string, "(die) Säge")
 
     def test_get_child_count(self):
+        """
+        Checks that vocgui.utils.get_child_count is valid.
+        A discipline or one of its child elements needs to have
+        at least one training set in order to be counted.
+        """
         # no valid disciplines
         parent = Discipline.objects.get(title="Handwerker:in")
         child = Discipline.objects.get(title="Werkzeug")
@@ -76,12 +92,21 @@ class TestUtils(TestCase):
         self.assertEqual(2, child_count)
 
     def test_create_ressource_path(self):
+        """
+        Checks that vocgui.utils.create_ressource_path creates a unique
+        path.
+        """
         first_path = create_ressource_path("/home/user", "img.png")
-        for i in range(5):
+        for _ in range(5):
             second_path = create_ressource_path("/home/user", "img.png")
             self.assertNotEqual(first_path, second_path)
 
     def test_get_training_set_count(self):
+        """
+        Checks that vocgui.tests.training_set_count delivers a
+        valid child count of a discipline (taking into account disciplines
+        without training sets etc.)
+        """
         # no valid disciplines
         parent = Discipline.objects.get(title="Handwerker:in")
         child = Discipline.objects.get(title="Werkzeug")

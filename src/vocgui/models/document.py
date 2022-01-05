@@ -1,17 +1,16 @@
 import os
 from pathlib import Path
 from django.db import models
-from pydub import AudioSegment
 from django.core.files import File
 from django.utils.translation import ugettext_lazy as _
-
-from .static import Static, convert_umlaute_audio
+from pydub import AudioSegment
 from vocgui.validators import (
     validate_file_extension,
     validate_file_size,
     validate_multiple_extensions,
 )
 from vocgui.utils import document_to_string
+from .static import Static, convert_umlaute_audio
 
 
 class Document(models.Model):
@@ -52,7 +51,6 @@ class Document(models.Model):
     )
     creator_is_admin = models.BooleanField(default=True, verbose_name=_("admin"))
 
-    @property
     def converted(self, content_type="audio/mpeg"):
         """
         Function that converts the uploaded audio to .mp3 and
@@ -61,32 +59,32 @@ class Document(models.Model):
         :param self: A handle to the :class:`models.Document`
         :type self: class: `models.Document`
         :param content_type: content type of the converted file, defaults to "audio/mpeg"
-        :type request: content_type
+        :type content_type: content_type
 
         :return: File containing .mp3 audio
         :rtype: .mp3 File
         """
-        super(Document, self).save()
-        file_path = self.audio.path
+        super().save()
+        file_path = self.audio.path # pylint: disable=no-member
         original_extension = file_path.split(".")[-1]
         mp3_converted_file = AudioSegment.from_file(file_path, original_extension)
         new_path = file_path[:-4] + "-conv.mp3"
         mp3_converted_file.export(new_path, format="mp3", bitrate="44.1k")
 
-        converted_audiofile = File(file=open(new_path, "rb"), name=Path(new_path))
+        converted_audiofile = File(file=open(new_path, "rb"), name=Path(new_path)) # pylint: disable=consider-using-with
         converted_audiofile.name = Path(new_path).name
         converted_audiofile.content_type = content_type
         converted_audiofile.size = os.path.getsize(new_path)
         os.remove(new_path)
         return converted_audiofile
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): # pylint: disable=missing-param-doc
         """Overwrite djangos save function to convert audio files
         to mp3 format (orignal file is saved as backup).
         """
         if self.audio:
-            self.audio = self.converted
-        super(Document, self).save(*args, **kwargs)
+            self.audio = self.converted()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         """String representation of Document instance

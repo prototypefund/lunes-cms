@@ -37,8 +37,8 @@ class DisciplineSerializer(serializers.ModelSerializer):
         utils.get_child_count(obj).
 
 
-        :param disc: Discipline instance
-        :type disc: models.Discipline
+        :param obj: Discipline instance
+        :type obj: models.Discipline
         :return: sum of children
         :rtype: int
         """
@@ -94,7 +94,7 @@ class DocumentImageListSerializer(serializers.ListSerializer):
         :rtype: dict
         """
         data = data.filter(confirmed=True)
-        return super(DocumentImageListSerializer, self).to_representation(data)
+        return super().to_representation(data)
 
 
 class DocumentImageSerializer(serializers.ModelSerializer):
@@ -167,8 +167,8 @@ class GroupSerializer(serializers.ModelSerializer):
         A child itself or one of its sub-children needs to
         contain at least one training set.
 
-        :param disc: Discipline instance
-        :type disc: models.Discipline
+        :param obj: Discipline instance
+        :type obj: models.Discipline
         :return: sum of children
         :rtype: int
         """

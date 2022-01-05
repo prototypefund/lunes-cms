@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from django.contrib import admin
-from mptt.admin import DraggableMPTTAdmin
 from django.utils.translation import ugettext_lazy as _
+from mptt.admin import DraggableMPTTAdmin
 
 from vocgui.models import Static, Discipline
 
@@ -41,7 +41,7 @@ class DisciplineAdmin(DraggableMPTTAdmin):
             obj.creator_is_admin = request.user.is_superuser
         obj.save()
 
-    def get_action_choices(self, request):
+    def get_action_choices(self, request): # pylint: disable=arguments-differ
         """
         Overwrite django built-in function to modify action choices. The first
         option is dropped since it is a place holder.
@@ -51,7 +51,7 @@ class DisciplineAdmin(DraggableMPTTAdmin):
         :return: modified action choices
         :rtype: dict
         """
-        choices = super(DisciplineAdmin, self).get_action_choices(request)
+        choices = super().get_action_choices(request)
         choices.pop(0)
         return choices
 
@@ -65,12 +65,12 @@ class DisciplineAdmin(DraggableMPTTAdmin):
         :return: adjustet queryset
         :rtype: QuerySet
         """
-        qs = super(DisciplineAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs.filter(creator_is_admin=True)
         return qs.filter(created_by__in=request.user.groups.all())
 
-    def get_form(self, request, obj=None, **kwargs):
+    def get_form(self, request, obj=None, **kwargs): # pylint: disable=arguments-differ
         """
         Overwrite django built-in function to define custom choices
         in mppt many to many selector for parent disciplines,
@@ -85,7 +85,7 @@ class DisciplineAdmin(DraggableMPTTAdmin):
         :return: model form with adjustet querysets
         :rtype: ModelForm
         """
-        form = super(DisciplineAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         if not request.user.is_superuser:
             form.base_fields["parent"].queryset = (
                 Discipline.objects.filter(
@@ -143,9 +143,8 @@ class DisciplineAdmin(DraggableMPTTAdmin):
         """
         if obj.creator_is_admin:
             return Static.admin_group
-        elif obj.created_by:
+        if obj.created_by:
             return obj.created_by
-        else:
-            return None
+        return None
 
     creator_group.short_description = _("creator group")

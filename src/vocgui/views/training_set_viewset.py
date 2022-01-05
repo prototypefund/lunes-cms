@@ -6,7 +6,7 @@ from vocgui.models import Discipline
 from .utils import check_group_object_permissions
 
 
-class TrainingSetViewSet(viewsets.ModelViewSet):
+class TrainingSetViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the TrainingSet module.
     Inherits from `viewsets.ModelViewSet` and defines queryset

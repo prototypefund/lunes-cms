@@ -4,7 +4,7 @@ from vocgui.models import Discipline
 from vocgui.serializers import DisciplineSerializer
 
 
-class DisciplineViewSet(viewsets.ModelViewSet):
+class DisciplineViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the Discipline module, optionally filtered by user groups.
     Inherits from `viewsets.ModelViewSet` and defines queryset
@@ -29,21 +29,20 @@ class DisciplineViewSet(viewsets.ModelViewSet):
             return Discipline.objects.none()
         if "group_id" in self.kwargs:
             return None
-        else:
-            queryset = Discipline.objects.filter(
-                Q(released=True)
-                & Q(creator_is_admin=True)
-                & Q(
-                    id__in=[
-                        obj.id
-                        for obj in Discipline.objects.all()
-                        if obj.get_descendant_count() == 0
-                    ]
-                )
-            ).annotate(
-                total_training_sets=Count(
-                    "training_sets", filter=Q(training_sets__released=True)
-                ),
-                total_discipline_children=Count("children"),
+        queryset = Discipline.objects.filter(
+            Q(released=True)
+            & Q(creator_is_admin=True)
+            & Q(
+                id__in=[
+                    obj.id
+                    for obj in Discipline.objects.all()
+                    if obj.get_descendant_count() == 0
+                ]
             )
+        ).annotate(
+            total_training_sets=Count(
+                "training_sets", filter=Q(training_sets__released=True)
+            ),
+            total_discipline_children=Count("children"),
+        )
         return queryset

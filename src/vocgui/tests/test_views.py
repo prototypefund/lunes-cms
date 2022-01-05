@@ -3,19 +3,26 @@ Tests for vocgui.views files
 """
 
 from django.test import TestCase
+from django.contrib.auth.models import Group, User  # pylint: disable=imported-auth-user
 from rest_framework.test import APIClient
+from rest_framework import status
 from vocgui.models import GroupAPIKey
 from vocgui.models.discipline import Discipline
 from vocgui.models.document import Document
 from vocgui.models.training_set import TrainingSet
-from rest_framework import status
-from django.contrib.auth.models import Group, User
 
 client = APIClient()
 
 
-class TestViews(TestCase):
+class TestViews(TestCase):  # pylint: disable=too-many-instance-attributes
+    """
+    Simple TestCase for views and endpoints
+    """
+
     def setUp(self):
+        """
+        Setup test database and create temporary elements
+        """
         self.lunes = User.objects.create_user(
             username="lunes",
             email="lunes@user.com",
@@ -125,10 +132,13 @@ class TestViews(TestCase):
         group_training_set.discipline.add(self.group_discipline_werkzeug)
 
     def test_discipline_filtered_viewset(self):
+        """
+        Checks that disciplines_by_level endpoint works as expected
+        """
         response = client.get("/api/disciplines_by_level/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        id = response.json()[0]["id"]
-        response = client.get(f"/api/disciplines_by_level/{id}/", format="json")
+        disc_id = response.json()[0]["id"]
+        response = client.get(f"/api/disciplines_by_level/{disc_id}/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = client.get(
@@ -143,21 +153,32 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_training_set_viewset(self):
+        """
+        Checks that training_set endpoint works as expected
+        """
         response = client.get(
             f"/api/training_set/{self.discipline_werkzeug.id}/", format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_document_viewset(self):
-        training_set = TrainingSet.objects.get(title="Grundlagen")
+        """
+        Checks that documents endpoint works as expected
+        """
         response = client.get(f"/api/documents/{self.training_set.id}/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_discipline_viewset(self):
+        """
+        Checks that disciplines endpoint works as expected
+        """
         response = client.get("/api/disciplines/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_document_by_id(self):
+        """
+        Checks that document_by_id works as expected
+        """
         client.force_authenticate(user=self.lunes)
         response = client.get(
             f"/api/document_by_id/{self.doc_hammer.id}/", format="json"
@@ -170,10 +191,13 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_group_view(self):
+        """
+        Checks that group_info endpoint works as expected
+        """
         client.credentials(HTTP_AUTHORIZATION="Api-Key " + self.key)
-        response = client.get(f"/api/group_info/", format="json")
+        response = client.get("/api/group_info/", format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         client.credentials(HTTP_AUTHORIZATION="Api-Key INVALIDKEY")
-        response = client.get(f"/api/group_info/", format="json")
+        response = client.get("/api/group_info/", format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         client.credentials(HTTP_AUTHORIZATION="")

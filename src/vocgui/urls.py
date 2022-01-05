@@ -4,9 +4,9 @@ Defines custom schema views and a router that
 handles the url patterns descriped in the `README.md` file
 """
 from django.urls import include, path
-from rest_framework import routers
 from django.conf.urls import url
 from rest_framework import permissions
+from rest_framework import routers
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 

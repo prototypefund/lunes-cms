@@ -10,7 +10,9 @@ from .utils import (
 )
 
 
-class DisciplineFilteredViewSet(viewsets.ModelViewSet):
+class DisciplineFilteredViewSet(
+    viewsets.ModelViewSet
+):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the Discipline module, optionally filtered respected to
     the different mptt levels or a group id.

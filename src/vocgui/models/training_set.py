@@ -1,10 +1,10 @@
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models.deletion import CASCADE
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import format_html
+from mptt.models import MPTTModel, TreeForeignKey
 
 from .static import convert_umlaute_images
 from .document import Document
@@ -54,7 +54,7 @@ class TrainingSet(MPTTModel):  # pylint: disable=R0903
         """
         return self.title
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=missing-param-doc
         """Overwrite djangos save function to assure
         that no child elements are created.
 
@@ -65,7 +65,7 @@ class TrainingSet(MPTTModel):  # pylint: disable=R0903
                 "It is not possible to create child elements for training sets (unlike disciplines)."
             )
             raise ValidationError(msg)
-        super(TrainingSet, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     # pylint: disable=R0903
     class Meta:
@@ -77,6 +77,12 @@ class TrainingSet(MPTTModel):  # pylint: disable=R0903
         verbose_name_plural = _("training sets")
 
     def style_description_field(self):
+        """Wrap description field in html tag that handles
+        long strings
+
+        :return: html representation of description
+        :rtype: str
+        """
         return format_html(
             '<div style="overflow-wrap: break-word; max-width: 150px;" >{}</div>',
             self.description,

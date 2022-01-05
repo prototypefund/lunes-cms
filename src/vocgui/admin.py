@@ -34,7 +34,7 @@ def get_app_list(self, request):
         _("vocabulary").capitalize(): 3,
         _("api keys").capitalize(): 4,
     }
-    app_dict = self._build_app_dict(request)
+    app_dict = self._build_app_dict(request)  # pylint: disable=protected-access
 
     # Sort the apps alphabetically.
     app_list = sorted(app_dict.values(), key=lambda x: x["name"].lower())

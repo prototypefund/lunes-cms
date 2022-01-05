@@ -13,12 +13,6 @@
 import os
 import sys
 
-import sphinx.builders.html
-import sphinx.builders.latex
-import sphinx.builders.texinfo
-import sphinx.builders.text
-import sphinx.ext.autodoc
-
 # Append project source directory to path environment variable
 sys.path.insert(0, os.path.abspath("../src"))
 
@@ -28,7 +22,7 @@ django_settings = "voctrainer.settings"
 # -- Project information -----------------------------------------------------
 
 project = 'Lunes CMS'
-copyright = '2021, Lunes'
+copyright = '2021, Lunes' # pylint: disable=redefined-builtin
 author = 'Lunes'
 
 # The full version, including alpha/beta/rc tags

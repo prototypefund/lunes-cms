@@ -20,6 +20,4 @@ class ManyToManyOverlay(FilteredSelectMultiple):
         Instantiates model by calling `super()` and passing a new `onclick`
         event to the widget.
         """
-        return super(ManyToManyOverlay, self).__init__(
-            attrs={"onclick": "document_overlay(event);"}, *args, **kwargs
-        )
+        super().__init__(attrs={"onclick": "document_overlay(event);"}, *args, **kwargs)

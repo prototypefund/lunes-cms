@@ -110,7 +110,7 @@ def check_group_object_permissions(request, group_id):
         raise PermissionDenied()
     try:
         api_key_object = GroupAPIKey.objects.get_from_key(key)
-    except GroupAPIKey.DoesNotExist:
-        raise PermissionDenied()
+    except GroupAPIKey.DoesNotExist as e:
+        raise PermissionDenied() from e
     if int(api_key_object.organization_id) != int(group_id):
         raise PermissionDenied()

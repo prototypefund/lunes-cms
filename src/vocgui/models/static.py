@@ -1,11 +1,11 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group  # pylint: disable=imported-auth-user
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from vocgui.utils import create_ressource_path
 
 
-class Static:
+class Static:  # pylint: disable=too-few-public-methods
     """
     Module for static and global variables
     """
@@ -38,7 +38,7 @@ class Static:
     default_group_name = None
 
 
-def convert_umlaute_images(instance, filename):
+def convert_umlaute_images(instance, filename):  # pylint: disable=unused-argument
     """Convert file name of images to handle all kind of
     characters (inluding "Umlaute" etc.).
 
@@ -52,7 +52,7 @@ def convert_umlaute_images(instance, filename):
     return create_ressource_path("images", filename)
 
 
-def convert_umlaute_audio(instance, filename):
+def convert_umlaute_audio(instance, filename):  # pylint: disable=unused-argument
     """Convert file name of audios to handle all kind of
     characters (inluding "Umlaute" etc.).
 
@@ -67,7 +67,9 @@ def convert_umlaute_audio(instance, filename):
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(
+    sender, instance, created, **kwargs
+):  # pylint: disable=missing-param-doc,unused-argument
     """Automatically adds a group when creating a new user
     if group name given in Static module
 
@@ -85,3 +87,5 @@ def create_user_profile(sender, instance, created, **kwargs):
         if not created or not default_group:
             return False
         instance.groups.add(Group.objects.get(name=Static.default_group_name))
+        return True
+    return False

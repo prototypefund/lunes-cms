@@ -1,7 +1,6 @@
 from django.core.exceptions import PermissionDenied
-from rest_framework_api_key.permissions import BaseHasAPIKey
-from .models import GroupAPIKey
 from rest_framework import permissions
+from .models import GroupAPIKey
 from .utils import get_key
 
 
@@ -19,6 +18,7 @@ class VerifyGroupKey(permissions.AllowAny):
         :type request: HttpRequest
         :param view: restframework view
         :type view: viewsets.ModelViewSet
+        :raises PermissionDenied: Exception if invalid API-Key is delivered
         :return: False if user doesn't send a API-key
         :rtype: bool
         """
@@ -26,7 +26,7 @@ class VerifyGroupKey(permissions.AllowAny):
         if key is None:
             return False
         try:
-            api_key = GroupAPIKey.objects.get_from_key(key)
-        except GroupAPIKey.DoesNotExist:
-            raise PermissionDenied()
+            _ = GroupAPIKey.objects.get_from_key(key)
+        except GroupAPIKey.DoesNotExist as e:
+            raise PermissionDenied() from e
         return True

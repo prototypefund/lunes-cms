@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from mptt.models import TreeForeignKey
 
 from .models import Document, TrainingSet, Discipline
 from .widgets import ManyToManyOverlay
@@ -15,14 +14,21 @@ class DisciplineChoiceField(forms.ModelMultipleChoiceField):
     """
 
     def label_from_instance(self, obj):
+        """
+        Creates label for discipline that includes ancestors.
+
+        :param obj: Discipline object
+        :type obj: vocgui.models.Discipline
+        :return: Discipline and its ancestors as string representation
+        :rtype: str
+        """
         if obj.parent:
             ancestors = [
                 node.title for node in obj.parent.get_ancestors(include_self=True)
             ]
             ancestors.append(obj.title)
             return " \u2794 ".join(ancestors)
-        else:
-            return obj.title
+        return obj.title
 
 
 class TrainingSetForm(forms.ModelForm):

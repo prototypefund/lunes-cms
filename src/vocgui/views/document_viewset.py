@@ -5,7 +5,7 @@ from vocgui.models import TrainingSet
 from .utils import check_group_object_permissions
 
 
-class DocumentViewSet(viewsets.ModelViewSet):
+class DocumentViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     Defines a view set for the Document module.
     Inherits from `viewsets.ModelViewSet` and defines queryset
