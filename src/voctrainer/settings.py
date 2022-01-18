@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "drf_yasg",
     "pydub",
-    "ordered_model",
     "mptt",
 ]
 
@@ -66,7 +65,7 @@ ROOT_URLCONF = "voctrainer.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

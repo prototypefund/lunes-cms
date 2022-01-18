@@ -1,12 +1,10 @@
+__pycache__/
+*.py[cod]
+.vscode/
 .venv
-*.pyc
-media
 db.sqlite3
 *.egg-info
-build
 dist
 .idea
 .vscode
 .coverage
-docs/
-sphinx/ref/

@@ -1,19 +1,21 @@
 from django.db import models
-from ordered_model.models import OrderedModel
+from mptt.models import MPTTModel, TreeForeignKey
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from django.db.models.deletion import CASCADE
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
 
 from .static import convert_umlaute_images
 from .document import Document
 from .discipline import Discipline
 
 
-class TrainingSet(OrderedModel):  # pylint: disable=R0903
+class TrainingSet(MPTTModel):  # pylint: disable=R0903
     """
     Training sets are part of disciplines, have a title, a description
     an icon and relates to documents and disciplines.
-    Inherits from `ordered_model.models.OrderedModel`.
+    Inherits from `mptt.models.MPTTModel`.
     """
 
     id = models.AutoField(primary_key=True)
@@ -25,12 +27,24 @@ class TrainingSet(OrderedModel):  # pylint: disable=R0903
     icon = models.ImageField(
         upload_to=convert_umlaute_images, blank=True, verbose_name=_("icon")
     )
-    documents = models.ManyToManyField(Document, related_name="training_sets")
-    discipline = models.ManyToManyField(Discipline, related_name="training_sets")
+    documents = models.ManyToManyField(
+        Document, related_name="training_sets", verbose_name=_("document")
+    )
+    discipline = models.ManyToManyField(
+        Discipline, related_name="training_sets", verbose_name=_("discipline")
+    )
     created_by = models.ForeignKey(
         Group, on_delete=CASCADE, null=True, blank=True, verbose_name=_("created by")
     )
     creator_is_admin = models.BooleanField(default=True, verbose_name=_("admin"))
+    parent = TreeForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children",
+        verbose_name=_("parent"),
+    )
 
     def __str__(self):
         """String representation of TrainingSet instance
@@ -40,11 +54,32 @@ class TrainingSet(OrderedModel):  # pylint: disable=R0903
         """
         return self.title
 
+    def save(self, *args, **kwargs):
+        """Overwrite djangos save function to assure
+        that no child elements are created.
+
+        :raises ValidationError: Exception if child training set is created
+        """
+        if self.parent:
+            msg = _(
+                "It is not possible to create child elements for training sets (unlike disciplines)."
+            )
+            raise ValidationError(msg)
+        super(TrainingSet, self).save(*args, **kwargs)
+
     # pylint: disable=R0903
-    class Meta(OrderedModel.Meta):
+    class Meta:
         """
         Define user readable name of TrainingSet
         """
 
         verbose_name = _("training set")
         verbose_name_plural = _("training sets")
+
+    def style_description_field(self):
+        return format_html(
+            '<div style="overflow-wrap: break-word; max-width: 150px;" >{}</div>',
+            self.description,
+        )
+
+    style_description_field.short_description = "description"

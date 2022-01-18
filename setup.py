@@ -26,6 +26,7 @@ setup(
         for root, dirs, files in os.walk("src/vocgui/static/")
     ]
     + [("usr/lib/systemd/system/", ["vocabulary-trainer.service"])],
+
     install_requires=[
         "Django>=2.2.16,<4.0",
         "easy-thumbnails",
@@ -40,6 +41,13 @@ setup(
         "django-ordered-model",
         "django-mptt",
         "djangorestframework-api-key",
+        "nose",
+        "django-nose",
+        "coverage",
+        "black",
+        "sphinx",
+        "sphinxcontrib-django2",
+        "sphinx-rtd-theme",
     ],
     extras_require={
         "dev": [
